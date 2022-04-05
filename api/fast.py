@@ -18,60 +18,13 @@ app.add_middleware(
 def test():
     return {'message' : 'Yo les 802!'}
 
-@app.get("/predict")
-def predict(account_amount_added_12_24m,
-            age,
-            avg_payment_span_0_12m,
-            num_unpaid_bills,
-            status_last_archived_0_24m,
-            recovery_debt,
-            sum_capital_paid_account_0_12m,
-            sum_paid_inv_0_12m,
-            merchant_group):
-    df = pd.DataFrame({'account_amount_added_12_24m':[account_amount_added_12_24m],
-    'account_days_in_dc_12_24m':[1],
-    'account_days_in_rem_12_24m':[1],
-    'account_days_in_term_12_24m':[1],
-    'account_incoming_debt_vs_paid_0_24m':[1],
-    'account_status':[1],
-    'account_worst_status_0_3m':[1],
-    'account_worst_status_12_24m':[1],
-    'account_worst_status_3_6m':[1],
-    'account_worst_status_6_12m':[1],
-    'age':[age],
-    'avg_payment_span_0_12m':[avg_payment_span_0_12m],
-    'avg_payment_span_0_3m':[1],
-    'merchant_category':['1'],
-    'merchant_group':[merchant_group],
-    'has_paid':[1],
-    'max_paid_inv_0_12m':[1],
-    'max_paid_inv_0_24m':[1],
-    'name_in_email':[1],
-    'num_active_div_by_paid_inv_0_12m':[1],
-    'num_active_inv':[1],
-    'num_arch_dc_0_12m':[1],
-    'num_arch_dc_12_24m':[1],
-    'num_arch_ok_0_12m':[1],
-    'num_arch_ok_12_24m':[1],
-    'num_arch_rem_0_12m':[1],
-    'num_arch_written_off_0_12m':[1],
-    'num_arch_written_off_12_24m':[1],
-    'num_unpaid_bills':[num_unpaid_bills],
-    'status_last_archived_0_24m':[status_last_archived_0_24m],
-    'status_2nd_last_archived_0_24m':[1],
-    'status_3rd_last_archived_0_24m':[1],
-    'status_max_archived_0_6_months':[1],
-    'status_max_archived_0_12_months':[1],
-    'status_max_archived_0_24_months':[1],
-    'recovery_debt':[recovery_debt],
-    'sum_capital_paid_account_0_12m':[sum_capital_paid_account_0_12m],
-    'sum_capital_paid_account_12_24m':[1],
-    'sum_paid_inv_0_12m':[sum_paid_inv_0_12m],
-    'time_hours':[1],
-    'worst_status_active_inv':[1]})
-    # Load pipeline from pickle file
-    pipeline = pickle.load(open("pipeline.pkl","rb"))
-    return {'prediction' : pipeline.predict_proba(df)[0,1]}
+@app.get("/drivers")
+def drivers(date_start, date_end):
+    dictio = {
+    'date_start': date_start,
+    'date_end': date_end
+    }
+    return dictio
 
 class Item(BaseModel):
     uuid : object
