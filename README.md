@@ -1,74 +1,17 @@
 # Data analysis
-- Document here the project: klarna
-- Description: Project Description
-- Data Source:
+- Document here the project: Twitter Analytics on F1
+- Description: F1 drivers and Teams analytics (top trends...)
+- Data Source:Twitter
 - Type of analysis:
 
 Please document the project the better you can.
 
-# Startup the project
+# To be done :
 
-The initial setup.
+## First part :
+- Automate the content of the notebook in an API (ability to chose dates from and to, in a get method maybe ?)
+- Build a streamlit front to exchange with the API (filters)
+- Check what will be invoiced because of GBQ
 
-Create virtualenv and install the project:
-```bash
-sudo apt-get install virtualenv python-pip python-dev
-deactivate; virtualenv ~/venv ; source ~/venv/bin/activate ;\
-    pip install pip -U; pip install -r requirements.txt
-```
-
-Unittest test:
-```bash
-make clean install test
-```
-
-Check for klarna in gitlab.com/{group}.
-If your project is not set please add it:
-
-- Create a new project on `gitlab.com/{group}/klarna`
-- Then populate it:
-
-```bash
-##   e.g. if group is "{group}" and project_name is "klarna"
-git remote add origin git@github.com:{group}/klarna.git
-git push -u origin master
-git push -u origin --tags
-```
-
-Functionnal test with a script:
-
-```bash
-cd
-mkdir tmp
-cd tmp
-klarna-run
-```
-
-# Install
-
-Go to `https://github.com/{group}/klarna` to see the project, manage issues,
-setup you ssh public key, ...
-
-Create a python3 virtualenv and activate it:
-
-```bash
-sudo apt-get install virtualenv python-pip python-dev
-deactivate; virtualenv -ppython3 ~/venv ; source ~/venv/bin/activate
-```
-
-Clone the project and install it:
-
-```bash
-git clone git@github.com:{group}/klarna.git
-cd klarna
-pip install -r requirements.txt
-make clean install test                # install and test
-```
-Functionnal test with a script:
-
-```bash
-cd
-mkdir tmp
-cd tmp
-klarna-run
-```
+## Second part :
+- Add a team analysis (Mercedes, Redbull...) and include it in the API and the streamlit
