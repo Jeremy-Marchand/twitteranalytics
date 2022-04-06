@@ -24,7 +24,18 @@ def drivers(date_start, date_end):
     'date_start': date_start,
     'date_end': date_end
     }
-    return dictio
+    query = """
+    SELECT *
+    FROM `wagon-bootcamp-802.my_dataset.new_table`
+    WHERE created_at < "{}" AND created_at > "{}"
+    ORDER BY created_at DESC
+    LIMIT 100
+    """
+    # Run a Standard SQL query with the project set explicitly
+    final_query = query.format(date_start, date_end)
+    project_id = 'wagon-bootcamp-802'
+    df = pd.read_gbq(final_query, project_id=project_id, dialect='standard')
+    return df
 
 class Item(BaseModel):
     uuid : object
