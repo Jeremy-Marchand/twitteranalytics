@@ -2,3 +2,5 @@
 pandas==1.3.5
 pandas-gbq==0.16.0
 fastapi
+nltk
+numpy
