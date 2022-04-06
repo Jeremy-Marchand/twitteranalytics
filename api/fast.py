@@ -6,8 +6,9 @@ import string
 import nltk
 nltk.download('stopwords')
 nltk.download('punkt')
-from nltk.corpus import stopwords 
+from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from google.oauth2 import service_account
 
 app = FastAPI()
 
@@ -49,7 +50,7 @@ drivers_list = {'Hamilton' : ['hamilton','lewis'],
 
 @app.get("/drivers")
 def drivers(date_start, date_end):
-    # local test request : http://127.0.0.1:8000/drivers?date_start=2022-04-05%2015:25:49%2B00:00&date_end=2022-04-05%2015:24:59%2B00:00
+    # local test request : http://127.0.0.1:8000/drivers?date_start=2022-04-05%2009:00:00%2B00:00&date_end=2022-04-06%2009:00:00%2B00:00
     query = """
     SELECT *
     FROM `wagon-bootcamp-802.my_dataset.new_table`
@@ -58,23 +59,25 @@ def drivers(date_start, date_end):
     """
     final_query = query.format(date_start, date_end)
     project_id = 'wagon-bootcamp-802'
-    
-    df = pd.read_gbq(final_query, project_id=project_id, dialect='standard')
+    credentials = service_account.Credentials.from_service_account_file(
+    'gcp_key/wagon-bootcamp-802-bd537eeb2bd3.json',
+)
+    df = pd.read_gbq(final_query, project_id=project_id, dialect='standard',credentials=credentials)
     df_clean = df.copy()
 
     #Removing RT mentions
     df_clean['text'] = df_clean['text'].str.replace(r'RT @\S* ', '')
     df_clean['text'] = df_clean['text'].str.replace(r'@\S* ', '')
     df_clean['text'] = df_clean['text'].str.replace(r'http\S*', '')
-    
+
     #Removing ponctuation
     def punct_remove(text):
         for punctuation in string.punctuation:
-            text = text.replace(punctuation, '') 
+            text = text.replace(punctuation, '')
         return text
     df_clean['text'] = df_clean['text'].apply(punct_remove)
     df_clean['text'] = df_clean['text'].apply(lambda row : row.lower())
-    
+
     #Removing numerical values
     def num_remove(text):
         text_rwkd = ''
@@ -82,16 +85,16 @@ def drivers(date_start, date_end):
             text_rwkd += car if not car.isdigit() else ''
         return text_rwkd
     df_clean['text'] = df_clean['text'].apply(num_remove)
-    
+
     #removing stop words
     def stop_remove(text):
-        stop_words = set(stopwords.words('english')) 
+        stop_words = set(stopwords.words('english'))
         word_tokens = word_tokenize(text)
         return " ".join([w for w in word_tokens if not w in stop_words])
 
     df_clean['text'] = df_clean['text'].apply(stop_remove)
     df_clean['text'] = df_clean['text'].str.replace(r' f ', ' f1 ')
-    
+
     #fetching final results using the drivers list
     nb_tweets = {}
     for driver, names in drivers_list.items():
@@ -100,7 +103,7 @@ def drivers(date_start, date_end):
             for name in names[1:]:
                 mask = mask | df_clean['text'].str.contains(f"{name}", na=False)
         nb_tweets[driver] = len(df_clean[mask])
-    
+
     return nb_tweets
 
 #Template for post method
