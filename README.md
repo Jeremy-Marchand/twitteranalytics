@@ -2,9 +2,8 @@
 - Document here the project: Twitter Analytics on F1
 - Description: F1 drivers and Teams analytics (top trends...)
 - Data Source:Twitter
-- Type of analysis:
+- Type of analysis:Data analysis and later NLP
 
-Please document the project the better you can.
 
 # To be done :
 
@@ -15,3 +14,6 @@ Please document the project the better you can.
 
 ## Second part :
 - Add a team analysis (Mercedes, Redbull...) and include it in the API and the streamlit
+
+## Third part :
+- Use NLP model to see the most liked and less liked drivers
