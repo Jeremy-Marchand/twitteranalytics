@@ -2,7 +2,7 @@
 PROJECT_ID=wagon-bootcamp-802
 
 # Docker image name
-DOCKER_IMAGE_NAME=image-test
+DOCKER_IMAGE_NAME=image-twitter
 
 
 

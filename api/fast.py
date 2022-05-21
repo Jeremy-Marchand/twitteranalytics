@@ -8,7 +8,8 @@ nltk.download('stopwords')
 nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from google.oauth2 import service_account
+# uncomment the following to run in a container locally
+# from google.oauth2 import service_account
 
 app = FastAPI()
 
@@ -21,7 +22,7 @@ app.add_middleware(
 )
 @app.get("/")
 def test():
-    return {'message' : 'Yo les 802!'}
+    return {'message' : 'Get everything about F1 tweets'}
 
 
 # Get drivers API :
@@ -50,19 +51,21 @@ drivers_list = {'Hamilton' : ['hamilton','lewis'],
 
 @app.get("/drivers")
 def drivers(date_start, date_end):
-    # local test request : http://127.0.0.1:8000/drivers?date_start=2022-04-05%2009:00:00%2B00:00&date_end=2022-04-06%2009:00:00%2B00:00
+    # local test request : http://127.0.0.1:8000/drivers?date_start=2022-05-20%2009:00:00%2B00:00&date_end=2022-05-22%2009:00:00%2B00:00
     query = """
     SELECT *
-    FROM `wagon-bootcamp-802.my_dataset.new_table`
+    FROM `wagon-bootcamp-802.my_dataset.twitter_table`
     WHERE created_at > "{}" AND created_at < "{}"
     ORDER BY created_at DESC
     """
     final_query = query.format(date_start, date_end)
     project_id = 'wagon-bootcamp-802'
-    credentials = service_account.Credentials.from_service_account_file(
-    'gcp_key/wagon-bootcamp-802-bd537eeb2bd3.json',
-)
-    df = pd.read_gbq(final_query, project_id=project_id, dialect='standard',credentials=credentials)
+# Uncomment to run in a container locally
+#     credentials = service_account.Credentials.from_service_account_file(
+#     'gcp_key/wagon-bootcamp-802-bd537eeb2bd3.json',
+# )
+# Uncomment final part of the following to run in a local container
+    df = pd.read_gbq(final_query, project_id=project_id, dialect='standard') #, credentials=credentials)
     df_clean = df.copy()
 
     #Removing RT mentions

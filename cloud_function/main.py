@@ -61,7 +61,7 @@ def func():
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
     df.to_gbq(table_id, if_exists='append')
 
-def hello_pubsub(event, context):
+def twitter_update(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
     Args:
          event (dict): Event payload.

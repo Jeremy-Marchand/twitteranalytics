@@ -1,6 +1,6 @@
 # Data analysis
-- Document here the project: Twitter Analytics on F1
-- Description: F1 drivers and Teams analytics (top trends...)
+- Twitter Analytics on F1
+- Description:F1 drivers and Teams analytics (top trends...)
 - Data Source:Twitter
 - Type of analysis:Data analysis and later NLP
 
@@ -8,7 +8,8 @@
 # To be done :
 
 ## First part :
-- Automate the content of the notebook in an API (ability to chose dates from and to, in a get method maybe ?)
+- Get data from tweeter and update a GBQ base : DONE
+- Automate the content of the notebook in an API (ability to chose dates from and to, in a get method maybe ?) : DONE
 - Build a streamlit front to exchange with the API (filters)
 - Check what will be invoiced because of GBQ
 
