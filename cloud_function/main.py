@@ -20,7 +20,7 @@ def last_date_db():
 
     query = """
         SELECT created_at
-        FROM `wagon-bootcamp-802.my_dataset.new_table`
+        FROM `wagon-bootcamp-802.my_dataset.twitter_table`
         ORDER BY created_at DESC
         LIMIT 1
     """
@@ -58,7 +58,7 @@ def func():
     df = pd.DataFrame(query_twitter(most_recent_dt)['data']).iloc[:-1]
     df = df[df['lang'] == 'en']
     df['created_at'] = pd.to_datetime(df['created_at'])
-    table_id = 'wagon-bootcamp-802.my_dataset.new_table'
+    table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
     df.to_gbq(table_id, if_exists='append')
 
 def hello_pubsub(event, context):
