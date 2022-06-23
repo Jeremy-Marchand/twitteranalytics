@@ -8,10 +8,9 @@
 # To be done :
 
 ## First part :
-- Get data from tweeter and update a GBQ base : DONE
-- Automate the content of the notebook in an API (ability to chose dates from and to, in a get method maybe ?) : DONE
-- Build a streamlit front to exchange with the API (filters)
-- Check what will be invoiced because of GBQ
+- Add Tests
+- Build CI
+- 
 
 ## Second part :
 - Add a team analysis (Mercedes, Redbull...) and include it in the API and the streamlit
