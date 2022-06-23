@@ -50,7 +50,7 @@ def query_twitter(start_time=None):
     json_response = connect_to_endpoint(search_url, query_params)
     return json_response
 
-def func():
+def main():
     '''
     Pushing results to GBQ
     '''
@@ -67,4 +67,4 @@ def twitter_update(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    func()
+    main()
