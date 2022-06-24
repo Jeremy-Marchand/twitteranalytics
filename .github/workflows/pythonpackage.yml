@@ -1,4 +1,12 @@
 
+name: Python package
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
 language: python
 # python versions to use during the tests
 python:
