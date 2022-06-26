@@ -10,7 +10,7 @@
 ## First part :
 - Add Tests
 - Build CI
-- 
+- Test CI
 
 ## Second part :
 - Add a team analysis (Mercedes, Redbull...) and include it in the API and the streamlit
