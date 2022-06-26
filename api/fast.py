@@ -2,12 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 # from pydantic import BaseModel
-import string
-import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+
+
+from api.word_transformation import num_remove, punct_remove, stop_remove
 # uncomment the following to run in a container locally
 # from google.oauth2 import service_account
 
@@ -74,27 +71,13 @@ def drivers(date_start, date_end):
     df_clean['text'] = df_clean['text'].str.replace(r'http\S*', '')
 
     #Removing ponctuation
-    def punct_remove(text):
-        for punctuation in string.punctuation:
-            text = text.replace(punctuation, '')
-        return text
     df_clean['text'] = df_clean['text'].apply(punct_remove)
     df_clean['text'] = df_clean['text'].apply(lambda row : row.lower())
 
     #Removing numerical values
-    def num_remove(text):
-        text_rwkd = ''
-        for car in text:
-            text_rwkd += car if not car.isdigit() else ''
-        return text_rwkd
     df_clean['text'] = df_clean['text'].apply(num_remove)
 
     #removing stop words
-    def stop_remove(text):
-        stop_words = set(stopwords.words('english'))
-        word_tokens = word_tokenize(text)
-        return " ".join([w for w in word_tokens if not w in stop_words])
-
     df_clean['text'] = df_clean['text'].apply(stop_remove)
     df_clean['text'] = df_clean['text'].str.replace(r' f ', ' f1 ')
 
