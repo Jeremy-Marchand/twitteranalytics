@@ -9,8 +9,8 @@ search_url = "https://api.twitter.com/2/tweets/search/recent"
 # expansions,tweet.fields,media.fields,poll.fields,place.fields,user.fields
 
 def get_token():
-     token = os.environ.get('BEARER_TOKEN','Key missing in env settings')
-     return token
+    token = os.environ.get('BEARER_TOKEN','Key missing in env settings')
+    return token
 
 def last_date_db():
     """

@@ -7,3 +7,5 @@ raw_data/
 **/__pycache__/
 .env
 gcp_key/
+venv/
+.vscode/
