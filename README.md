@@ -9,7 +9,7 @@
 
 ## To be done :
 - Build and test CI - OK
-- Add Tests
+- Add Tests with mocking
 
 
 ## Second part :

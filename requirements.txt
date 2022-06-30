@@ -7,3 +7,4 @@ numpy
 uvicorn
 google-auth
 pytest
+pytest_mock
