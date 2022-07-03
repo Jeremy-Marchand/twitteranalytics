@@ -19,7 +19,7 @@ jobs:
     - id: auth
       uses: google-github-actions/auth@v0
       with:
-        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+        credentials_json: '${{secrets.GCP_CREDENTIALS}}'
 
     - id: 'deploy'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
@@ -33,7 +33,7 @@ jobs:
         project_id: 'wagon-bootcamp-802'
         secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN'
         event_trigger_type: 'google.pubsub.topic.publish'
-        event_trigger_resource: '${{ secrets.TWITTER_PUB_SUB }}'
+        event_trigger_resource: '${{secrets.TWITTER_PUB_SUB}}'
 
 
 
