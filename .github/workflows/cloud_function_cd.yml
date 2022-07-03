@@ -34,7 +34,7 @@ jobs:
         secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN'
         event_trigger_type: 'google.pubsub.topic.publish'
         event_trigger_resource: '${{ secrets.TWITTER_PUB_SUB }}'
-        deploy_timeout: '240'
+        deploy_timeout: '180'
 
 
 
