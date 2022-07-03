@@ -9,6 +9,7 @@
 
 ## To be done :
 - Build and test CI - OK
+- Add CD
 - Add Tests with mocking
 
 
