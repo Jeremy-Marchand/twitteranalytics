@@ -2,7 +2,7 @@ import pandas as pd
 from cloud_function.main import last_date_db, get_token
 
 def get_token_side_effect(token_name, default=None):
-    if token_name == 'TWITTER_BEARER_TOKEN':
+    if token_name == 'BEARER_TOKEN':
         return 'TOKEN_OK'
     else:
         return 'Key missing in env settings'

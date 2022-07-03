@@ -31,7 +31,7 @@ jobs:
         region: 'europe-west1'
         source_dir: 'cloud_function/'
         project_id: 'wagon-bootcamp-802'
-        secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN'
+        secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN/version/1'
         event_trigger_type: 'google.pubsub.topic.publish'
         event_trigger_resource: '${{ secrets.TWITTER_PUB_SUB }}'
         deploy_timeout: '180'
