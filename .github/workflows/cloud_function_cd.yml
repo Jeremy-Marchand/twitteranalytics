@@ -1,0 +1,42 @@
+name: 'Cloud Function CD'
+
+on:
+  pull_request:
+    branches: [master]
+    types: [closed]
+
+jobs:
+  job_id:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - id: auth
+      uses: google-github-actions/auth@v0
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - id: 'deploy'
+      uses: 'google-github-actions/deploy-cloud-functions@v0'
+      with:
+        name: 'tweets_fetching'
+        runtime: 'python39'
+        entry_point: 'twitter_update'
+        memory_mb : '512'
+        region: 'europe-west1'
+        source_dir: 'cloud_function/'
+        project_id: 'wagon-bootcamp-802'
+        secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN'
+        event_trigger_type: 'google.pubsub.topic.publish'
+        event_trigger_resource: '${{ secrets.TWITTER_PUB_SUB }}'
+
+
+
+    # # Example of using the output
+    # - id: 'test'
+    #   run: 'curl "${{ steps.deploy.outputs.url }}"'
