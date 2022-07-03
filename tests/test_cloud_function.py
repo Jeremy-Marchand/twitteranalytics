@@ -1,8 +1,8 @@
 import pandas as pd
-from cloud_function.main import last_date_db, get_token 
+from cloud_function.main import last_date_db, get_token
 
 def get_token_side_effect(token_name, default=None):
-    if token_name == 'BEARER_TOKEN':
+    if token_name == 'TWITTER_BEARER_TOKEN':
         return 'TOKEN_OK'
     else:
         return 'Key missing in env settings'
@@ -20,5 +20,3 @@ def test_last_date_db(mocker):
                 return_value = df_test_last_date
                 )
     assert last_date_db() == '2022-06-10T17:57:21Z'
-
-    
