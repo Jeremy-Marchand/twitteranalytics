@@ -55,9 +55,18 @@ def main():
     Pushing results to GBQ
     '''
     most_recent_dt = last_date_db()
-    df = pd.DataFrame(query_twitter(most_recent_dt)['data']).iloc[:-1]
+    response = query_twitter(most_recent_dt)
+    data = pd.DataFrame()
+    while response['meta'].get('next_token',False):
+        df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']]
+        df = df[df['lang'] == 'en']
+        df['created_at'] = pd.to_datetime(df['created_at'])
+        data = data.append(df, ignore_index=True)
+        response = query_twitter(most_recent_dt,response['meta'].get('next_token',False))
+    df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']].iloc[:-1]
     df = df[df['lang'] == 'en']
     df['created_at'] = pd.to_datetime(df['created_at'])
+    data = data.append(df, ignore_index=True)
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
     df.to_gbq(table_id, if_exists='append')
 
