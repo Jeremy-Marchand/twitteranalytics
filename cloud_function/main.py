@@ -45,10 +45,24 @@ def connect_to_endpoint(url, params):
     return response.json()
 
 
-def query_twitter(start_time=None):
-    query_params = {'query': '#F1','tweet.fields':'created_at,lang', 'start_time':start_time, 'max_results' : '100'}
+def query_twitter(start_time=None, next_token=None):
+    query_params = {'query': '#F1',
+                    'tweet.fields':'created_at,lang',
+                    'start_time':start_time,
+                    'max_results' : '100',
+                    'next_token': next_token
+                   }
     json_response = connect_to_endpoint(search_url, query_params)
     return json_response
+
+def fetching_tweets(response):
+    if response['meta'].get('next_token',False):
+        df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']]
+    else:
+        df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']].iloc[:-1]
+    df = df[df['lang'] == 'en']
+    df['created_at'] = pd.to_datetime(df['created_at'])
+    return df
 
 def main():
     '''
@@ -58,17 +72,12 @@ def main():
     response = query_twitter(most_recent_dt)
     data = pd.DataFrame()
     while response['meta'].get('next_token',False):
-        df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']]
-        df = df[df['lang'] == 'en']
-        df['created_at'] = pd.to_datetime(df['created_at'])
-        data = data.append(df, ignore_index=True)
+        data = data.append(fetching_tweets(response), ignore_index=True)
         response = query_twitter(most_recent_dt,response['meta'].get('next_token',False))
-    df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']].iloc[:-1]
-    df = df[df['lang'] == 'en']
-    df['created_at'] = pd.to_datetime(df['created_at'])
-    data = data.append(df, ignore_index=True)
+    data = data.append(fetching_tweets(response), ignore_index=True)
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
-    df.to_gbq(table_id, if_exists='append')
+    data.to_gbq(table_id, if_exists='append')
+    print('Tweets successfully merged into the table')
 
 def twitter_update(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
