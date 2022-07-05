@@ -71,7 +71,7 @@ def main():
         response = query_twitter(most_recent_dt,response['meta'].get('next_token',False))
     data = data.append(fetching_tweets(response), ignore_index=True)
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
-    df.to_gbq(table_id, if_exists='append')
+    data.to_gbq(table_id, if_exists='append')
     print('Tweets successfully merged into the table')
 
 def twitter_update(event, context):
