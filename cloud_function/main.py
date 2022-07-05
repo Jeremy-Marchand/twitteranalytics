@@ -45,8 +45,13 @@ def connect_to_endpoint(url, params):
     return response.json()
 
 
-def query_twitter(start_time=None):
-    query_params = {'query': '#F1','tweet.fields':'created_at,lang', 'start_time':start_time, 'max_results' : '100'}
+def query_twitter(start_time=None, next_token=None):
+    query_params = {'query': '#F1',
+                    'tweet.fields':'created_at,lang',
+                    'start_time':start_time,
+                    'max_results' : '100',
+                    'next_token': next_token
+                   }
     json_response = connect_to_endpoint(search_url, query_params)
     return json_response
 
