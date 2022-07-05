@@ -55,8 +55,8 @@ def fetching_tweets(response):
         df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']]
     else:
         df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']].iloc[:-1]
-        df = df[df['lang'] == 'en']
-        df['created_at'] = pd.to_datetime(df['created_at'])
+    df = df[df['lang'] == 'en']
+    df['created_at'] = pd.to_datetime(df['created_at'])
     return df
 
 def main():
@@ -72,6 +72,7 @@ def main():
     data = data.append(fetching_tweets(response), ignore_index=True)
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
     df.to_gbq(table_id, if_exists='append')
+    print('Tweets successfully merged into the table')
 
 def twitter_update(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
