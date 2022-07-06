@@ -37,7 +37,7 @@ def bearer_oauth(r):
     r.headers["User-Agent"] = "v2RecentSearchPython"
     return r
 
-def connect_to_endpoint(url, params):
+def connect_to_endpoint(url: str, params: str):
     response = requests.get(url, auth=bearer_oauth, params=params)
     print(response.status_code)
     if response.status_code != 200:
@@ -78,6 +78,7 @@ def main():
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
     data.to_gbq(table_id, if_exists='append')
     print('Tweets successfully merged into the table')
+    return None
 
 def twitter_update(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.
