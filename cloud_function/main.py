@@ -1,5 +1,6 @@
 import os
 import requests
+
 # from dotenv import load_dotenv, find_dotenv
 from datetime import datetime
 import pandas as pd
@@ -8,9 +9,11 @@ search_url = "https://api.twitter.com/2/tweets/search/recent"
 # Optional params: start_time,end_time,since_id,until_id,max_results,next_token,
 # expansions,tweet.fields,media.fields,poll.fields,place.fields,user.fields
 
+
 def get_token():
-    token = os.environ.get('BEARER_TOKEN','Key missing in env settings')
+    token = os.environ.get("BEARER_TOKEN", "Key missing in env settings")
     return token
+
 
 def last_date_db():
     """
@@ -24,8 +27,8 @@ def last_date_db():
         ORDER BY created_at DESC
         LIMIT 1
     """
-    df = pd.read_gbq(query, dialect='standard')
-    return df.iloc[0]['created_at'].tz_localize(None).isoformat()+'Z'
+    df = pd.read_gbq(query, dialect="standard")
+    return df.iloc[0]["created_at"].tz_localize(None).isoformat() + "Z"
 
 
 def bearer_oauth(r):
@@ -37,6 +40,7 @@ def bearer_oauth(r):
     r.headers["User-Agent"] = "v2RecentSearchPython"
     return r
 
+
 def connect_to_endpoint(url, params):
     response = requests.get(url, auth=bearer_oauth, params=params)
     print(response.status_code)
@@ -46,38 +50,46 @@ def connect_to_endpoint(url, params):
 
 
 def query_twitter(start_time=None, next_token=None):
-    query_params = {'query': '#F1',
-                    'tweet.fields':'created_at,lang',
-                    'start_time':start_time,
-                    'max_results' : '100',
-                    'next_token': next_token
-                   }
+    query_params = {
+        "query": "#F1",
+        "tweet.fields": "created_at,lang",
+        "start_time": start_time,
+        "max_results": "100",
+        "next_token": next_token,
+    }
     json_response = connect_to_endpoint(search_url, query_params)
     return json_response
 
+
 def fetching_tweets(response):
-    if response['meta'].get('next_token',False):
-        df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']]
+    if response["meta"].get("next_token", False):
+        df = pd.DataFrame(response["data"])[["text", "created_at", "id", "lang"]]
     else:
-        df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']].iloc[:-1]
-    df = df[df['lang'] == 'en']
-    df['created_at'] = pd.to_datetime(df['created_at'])
+        df = pd.DataFrame(response["data"])[["text", "created_at", "id", "lang"]].iloc[
+            :-1
+        ]
+    df = df[df["lang"] == "en"]
+    df["created_at"] = pd.to_datetime(df["created_at"])
     return df
 
+
 def main():
-    '''
+    """
     Pushing results to GBQ
-    '''
+    """
     most_recent_dt = last_date_db()
     response = query_twitter(most_recent_dt)
     data = pd.DataFrame()
-    while response['meta'].get('next_token',False):
+    while response["meta"].get("next_token", False):
         data = data.append(fetching_tweets(response), ignore_index=True)
-        response = query_twitter(most_recent_dt,response['meta'].get('next_token',False))
+        response = query_twitter(
+            most_recent_dt, response["meta"].get("next_token", False)
+        )
     data = data.append(fetching_tweets(response), ignore_index=True)
-    table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
-    data.to_gbq(table_id, if_exists='append')
-    print('Tweets successfully merged into the table')
+    table_id = "wagon-bootcamp-802.my_dataset.twitter_table"
+    data.to_gbq(table_id, if_exists="append")
+    print("Tweets successfully merged into the table")
+
 
 def twitter_update(event, context):
     """Triggered from a message on a Cloud Pub/Sub topic.

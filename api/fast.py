@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
+
 # from pydantic import BaseModel
 
 
 from api.word_transformation import num_remove, punct_remove, stop_remove
+
 # uncomment the following to run in a container locally
 # from google.oauth2 import service_account
 
@@ -17,34 +19,39 @@ app.add_middleware(
     allow_methods=["*"],  # Allows all methods
     allow_headers=["*"],  # Allows all headers
 )
+
+
 @app.get("/")
 def test():
-    return {'message' : 'Get everything about F1 tweets'}
+    return {"message": "Get everything about F1 tweets"}
 
 
 # Get drivers API :
 
 # Defining the names to find in tweets
-drivers_list = {'Hamilton' : ['hamilton','lewis'],
-           'Russel' : ['russel','georges'],
-           'Perez' : ['perez','checo','sergio'],
-           'Verstappen' : ['verstappen','max'],
-           'Sainz' : ['sainz','carlos'],
-           'Leclerc' : ['leclerc','charles'],
-           'Ricciardo' : ['ricciardo', 'daniel'],
-           'Norris' : ['norris','lando'],
-           'Alonso' : ['alonso','fernando'],
-           'Ocon' : ['ocon','esteban'],
-           'Schumacher' : ['schumacher','mick'],
-           'Magnussen' : ['magnussen','kevin'],
-           'Bottas' : ['bottas','valtteri'],
-           'Zhou' : ['zhou','guanyu'],
-           'Gasly' : ['gasly','pierre'],
-           'Tsunoda' : ['tsunoda','yuki'],
-           'Stroll' : ['stroll','lance'],
-           'Hulkenberg' : ['hulkenberg','nico'],
-           'Albon' : ['albon','alexander'],
-           'Latifi' : ['latifi','nicholas']}
+drivers_list = {
+    "Hamilton": ["hamilton", "lewis"],
+    "Russel": ["russel", "georges"],
+    "Perez": ["perez", "checo", "sergio"],
+    "Verstappen": ["verstappen", "max"],
+    "Sainz": ["sainz", "carlos"],
+    "Leclerc": ["leclerc", "charles"],
+    "Ricciardo": ["ricciardo", "daniel"],
+    "Norris": ["norris", "lando"],
+    "Alonso": ["alonso", "fernando"],
+    "Ocon": ["ocon", "esteban"],
+    "Schumacher": ["schumacher", "mick"],
+    "Magnussen": ["magnussen", "kevin"],
+    "Bottas": ["bottas", "valtteri"],
+    "Zhou": ["zhou", "guanyu"],
+    "Gasly": ["gasly", "pierre"],
+    "Tsunoda": ["tsunoda", "yuki"],
+    "Stroll": ["stroll", "lance"],
+    "Hulkenberg": ["hulkenberg", "nico"],
+    "Albon": ["albon", "alexander"],
+    "Latifi": ["latifi", "nicholas"],
+}
+
 
 @app.get("/drivers")
 def drivers(date_start, date_end):
@@ -56,43 +63,46 @@ def drivers(date_start, date_end):
     ORDER BY created_at DESC
     """
     final_query = query.format(date_start, date_end)
-    project_id = 'wagon-bootcamp-802'
-# Uncomment to run in a container locally
-#     credentials = service_account.Credentials.from_service_account_file(
-#     'gcp_key/wagon-bootcamp-802-bd537eeb2bd3.json',
-# )
-# Uncomment final part of the following to run in a local container
-    df = pd.read_gbq(final_query, project_id=project_id, dialect='standard') #, credentials=credentials)
+    project_id = "wagon-bootcamp-802"
+    # Uncomment to run in a container locally
+    #     credentials = service_account.Credentials.from_service_account_file(
+    #     'gcp_key/wagon-bootcamp-802-bd537eeb2bd3.json',
+    # )
+    # Uncomment final part of the following to run in a local container
+    df = pd.read_gbq(
+        final_query, project_id=project_id, dialect="standard"
+    )  # , credentials=credentials)
     df_clean = df.copy()
 
-    #Removing RT mentions
-    df_clean['text'] = df_clean['text'].str.replace(r'RT @\S* ', '')
-    df_clean['text'] = df_clean['text'].str.replace(r'@\S* ', '')
-    df_clean['text'] = df_clean['text'].str.replace(r'http\S*', '')
+    # Removing RT mentions
+    df_clean["text"] = df_clean["text"].str.replace(r"RT @\S* ", "")
+    df_clean["text"] = df_clean["text"].str.replace(r"@\S* ", "")
+    df_clean["text"] = df_clean["text"].str.replace(r"http\S*", "")
 
-    #Removing ponctuation
-    df_clean['text'] = df_clean['text'].apply(punct_remove)
-    df_clean['text'] = df_clean['text'].apply(lambda row : row.lower())
+    # Removing ponctuation
+    df_clean["text"] = df_clean["text"].apply(punct_remove)
+    df_clean["text"] = df_clean["text"].apply(lambda row: row.lower())
 
-    #Removing numerical values
-    df_clean['text'] = df_clean['text'].apply(num_remove)
+    # Removing numerical values
+    df_clean["text"] = df_clean["text"].apply(num_remove)
 
-    #removing stop words
-    df_clean['text'] = df_clean['text'].apply(stop_remove)
-    df_clean['text'] = df_clean['text'].str.replace(r' f ', ' f1 ')
+    # removing stop words
+    df_clean["text"] = df_clean["text"].apply(stop_remove)
+    df_clean["text"] = df_clean["text"].str.replace(r" f ", " f1 ")
 
-    #fetching final results using the drivers list
+    # fetching final results using the drivers list
     nb_tweets = {}
     for driver, names in drivers_list.items():
-        mask = df_clean['text'].str.contains(f"{names[0]}", na=False)
+        mask = df_clean["text"].str.contains(f"{names[0]}", na=False)
         if len(names) > 1:
             for name in names[1:]:
-                mask = mask | df_clean['text'].str.contains(f"{name}", na=False)
+                mask = mask | df_clean["text"].str.contains(f"{name}", na=False)
         nb_tweets[driver] = len(df_clean[mask])
 
     return nb_tweets
 
-#Template for post method
+
+# Template for post method
 # class Item(BaseModel):
 #     uuid : object
 #     account_amount_added_12_24m : int
