@@ -8,3 +8,4 @@ uvicorn
 google-auth
 pytest
 pytest_mock
+google-cloud-firestore

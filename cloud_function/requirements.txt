@@ -6,5 +6,3 @@ nltk
 numpy
 google-auth
 google-cloud-firestore
-grpcio
-google-cloud-core
