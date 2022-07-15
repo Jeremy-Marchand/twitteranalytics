@@ -4,7 +4,10 @@ from cloud_function.main import last_date_db, get_token, query_twitter, fetching
 from typing import TypedDict
 from typing_extensions import NotRequired
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> bfe35065e3132daacba1be808bd37154700a9c02
 
 def get_token_side_effect(token_name, default=None):
     if token_name == "BEARER_TOKEN":
@@ -128,6 +131,9 @@ def test_fetching_tweets_next():
         df_test_from_json,
         df_test_comparison)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> adding tests for CF
 =======
 >>>>>>> Solving typing missing
+=======
+>>>>>>> bfe35065e3132daacba1be808bd37154700a9c02

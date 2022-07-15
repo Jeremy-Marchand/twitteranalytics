@@ -19,11 +19,15 @@ def get_token():
     return token
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 def last_date_db():
 =======
 def last_date_db() -> str:
 >>>>>>> Solving typing missing
+=======
+def last_date_db() -> str:
+>>>>>>> bfe35065e3132daacba1be808bd37154700a9c02
     """
     Method to retrieve the last date in the DB
     """
@@ -75,6 +79,7 @@ def connect_to_endpoint(url: str, params: dict) -> TwitterApiResponse:
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def query_twitter(start_time=None, next_token=None):
     query_params = {
         "query": "#F1",
@@ -91,6 +96,8 @@ def fetching_tweets(response):
     if response["meta"].get("next_token", False):
         df = pd.DataFrame(response["data"])[["text", "created_at", "id", "lang"]]
 =======
+=======
+>>>>>>> bfe35065e3132daacba1be808bd37154700a9c02
 def query_twitter(start_time: Optional[str]=None, next_token: Optional[str]=None) -> TwitterApiResponse:
     query_params = {'query': '#F1',
                     'tweet.fields':'created_at,lang',
@@ -114,10 +121,13 @@ def fetching_tweets(response: TwitterApiResponse) -> pd.DataFrame:
     return df
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 def main():
     """
 =======
+=======
+>>>>>>> bfe35065e3132daacba1be808bd37154700a9c02
 def main() -> None:
     '''
 >>>>>>> Solving typing missing
@@ -129,12 +139,16 @@ def main() -> None:
     while response["meta"].get("next_token", False):
         data = data.append(fetching_tweets(response), ignore_index=True)
 <<<<<<< HEAD
+<<<<<<< HEAD
         response = query_twitter(
             most_recent_dt, response["meta"].get("next_token", False)
         )
 =======
         response = query_twitter(most_recent_dt,response['meta'].get('next_token',None))
 >>>>>>> Solving typing missing
+=======
+        response = query_twitter(most_recent_dt,response['meta'].get('next_token',None))
+>>>>>>> bfe35065e3132daacba1be808bd37154700a9c02
     data = data.append(fetching_tweets(response), ignore_index=True)
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
     data.to_gbq(table_id, if_exists='append')
