@@ -9,4 +9,3 @@ raw_data/
 gcp_key/
 venv/
 .vscode/
-.python-version
