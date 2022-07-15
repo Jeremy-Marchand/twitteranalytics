@@ -6,7 +6,7 @@ import requests
 from datetime import datetime
 import pandas as pd
 import logging
-from typing import TypedDict, Optional, Union
+from typing import TypedDict, Optional
 from typing_extensions import NotRequired
 from google.cloud import firestore
 
