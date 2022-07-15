@@ -1,15 +1,10 @@
-from typing_extensions import NotRequired
 import pandas as pd
 from cloud_function.main import last_date_db, get_token, query_twitter, fetching_tweets
 from typing import TypedDict
 from typing_extensions import NotRequired
 
-<<<<<<< HEAD
 
-=======
->>>>>>> bfe35065e3132daacba1be808bd37154700a9c02
-
-def get_token_side_effect(token_name, default=None):
+def get_token_side_effect(token_name = None):
     if token_name == "BEARER_TOKEN":
         return "TOKEN_OK"
     else:
@@ -17,21 +12,6 @@ def get_token_side_effect(token_name, default=None):
 
 
 def test_get_token(mocker):
-<<<<<<< HEAD
-    mocker.patch(
-        "cloud_function.main.os.environ.get", side_effect=get_token_side_effect
-    )
-    assert get_token() == "TOKEN_OK"
-
-
-def test_last_date_db(mocker):
-    df_test_last_date = pd.DataFrame(
-        {"created_at": ["2022-06-10 17:57:21 UTC"]}, index=[0]
-    )
-    df_test_last_date["created_at"] = pd.to_datetime(df_test_last_date["created_at"])
-    mocker.patch("cloud_function.main.pd.read_gbq", return_value=df_test_last_date)
-    assert last_date_db() == "2022-06-10T17:57:21Z"
-=======
     mocker.patch('cloud_function.main.os.environ.get',
                 side_effect=get_token_side_effect)
     assert get_token() == 'TOKEN_OK'
@@ -44,7 +24,6 @@ def test_last_date_db(mocker):
                 return_value = df_test_last_date
                 )
     assert last_date_db() == '2022-06-10T17:57:21Z'
-
 
 class Tweet(TypedDict):
     lang: str
@@ -75,9 +54,7 @@ FAKE_TWITTER_API_RESPONSE = {'data': [{
                 'next_token': 'b26v89c19zqg8o3fpz2m15nlsnmmd4ev3codr28uvwzgd'
                     }
             }
-
 FAKE_TWITTER_API_RESPONSE_WITH_NO_NEXT: TwitterApiResponse
-
 FAKE_TWITTER_API_RESPONSE_WITH_NO_NEXT = {'data': [{
                 'lang': 'en',
                 'created_at': '2022-07-06T13:53:07.000Z',
@@ -130,10 +107,3 @@ def test_fetching_tweets_next():
     pd.testing.assert_frame_equal(
         df_test_from_json,
         df_test_comparison)
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> adding tests for CF
-=======
->>>>>>> Solving typing missing
-=======
->>>>>>> bfe35065e3132daacba1be808bd37154700a9c02
