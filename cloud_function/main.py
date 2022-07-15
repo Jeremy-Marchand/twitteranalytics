@@ -34,22 +34,6 @@ class FirestoreLastDate:
             logging.error("Unable to retrieve last date from firestore")
 
 
-def last_date_db() -> str:
-    """
-    Method to retrieve the last date in the DB
-    """
-    # Construct a BigQuery client object.
-
-    query = """
-        SELECT created_at
-        FROM `wagon-bootcamp-802.my_dataset.twitter_table`
-        ORDER BY created_at DESC
-        LIMIT 1
-    """
-    df = pd.read_gbq(query, dialect="standard")
-    return df.iloc[0]["created_at"].tz_localize(None).isoformat() + "Z"
-
-
 def bearer_oauth(r):
     """
     Method required by bearer token authentication.

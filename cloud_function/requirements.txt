@@ -5,4 +5,6 @@ fastapi
 nltk
 numpy
 google-auth
-google-cloud-firestore==2.5.3
+google-cloud-firestore
+grpcio
+google-cloud-core
