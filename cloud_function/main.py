@@ -6,8 +6,9 @@ import requests
 from datetime import datetime
 import pandas as pd
 import logging
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, Union
 from typing_extensions import NotRequired
+from google.cloud import firestore
 
 search_url = "https://api.twitter.com/2/tweets/search/recent"
 # Optional params: start_time,end_time,since_id,until_id,max_results,next_token,
@@ -17,6 +18,21 @@ search_url = "https://api.twitter.com/2/tweets/search/recent"
 def get_token():
     token = os.environ.get("BEARER_TOKEN", "Key missing in env settings")
     return token
+
+
+class FirestoreLastDate:
+    def __init__(self) -> None:
+        self.db = firestore.Client(project="wagon-bootcamp-802")
+        self.doc_ref = self.db.collection("twitter_dates").document("last_date")
+    def update_last_date(self, last_date_db) -> None:
+        self.doc_ref.set({"last_date_db": last_date_db})
+    def read_last_date(self):
+        last_date = self.doc_ref.get().to_dict()
+        if last_date:
+            return last_date.get("last_date_db")
+        else:
+            logging.error("Unable to retrieve last date from firestore")
+
 
 def last_date_db() -> str:
     """
@@ -94,16 +110,20 @@ def main() -> None:
     """
     Pushing results to GBQ
     """
-    most_recent_dt = last_date_db()
+    most_recent_firestore = FirestoreLastDate()
+    most_recent_dt = most_recent_firestore.read_last_date()
     response = query_twitter(most_recent_dt)
     data = pd.DataFrame()
-    while response["meta"].get("next_token", False):
+    while response["meta"].get("next_token", None):
         data = data.append(fetching_tweets(response), ignore_index=True)
         response = query_twitter(most_recent_dt,response['meta'].get('next_token',None))
     data = data.append(fetching_tweets(response), ignore_index=True)
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
     data.to_gbq(table_id, if_exists='append')
+    new_last_date = data.iloc[0]["created_at"].tz_localize(None).isoformat() + "Z"
     logging.info('Tweets successfully merged into the table')
+    most_recent_firestore.update_last_date(new_last_date)
+    logging.info('New date updated to firestore')
     return None
 
 def twitter_update(event, context) -> None:
