@@ -4,7 +4,7 @@ from typing import TypedDict
 from typing_extensions import NotRequired
 
 
-def get_token_side_effect(token_name = None):
+def get_token_side_effect(token_name, default=None):
     if token_name == "BEARER_TOKEN":
         return "TOKEN_OK"
     else:
