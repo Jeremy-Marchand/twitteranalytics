@@ -1,9 +1,13 @@
 import os
+from typing import Dict
 import requests
 
 # from dotenv import load_dotenv, find_dotenv
 from datetime import datetime
 import pandas as pd
+import logging
+from typing import TypedDict, Optional
+from typing_extensions import NotRequired
 
 search_url = "https://api.twitter.com/2/tweets/search/recent"
 # Optional params: start_time,end_time,since_id,until_id,max_results,next_token,
@@ -14,8 +18,12 @@ def get_token():
     token = os.environ.get("BEARER_TOKEN", "Key missing in env settings")
     return token
 
+<<<<<<< HEAD
 
 def last_date_db():
+=======
+def last_date_db() -> str:
+>>>>>>> Solving typing missing
     """
     Method to retrieve the last date in the DB
     """
@@ -40,14 +48,33 @@ def bearer_oauth(r):
     r.headers["User-Agent"] = "v2RecentSearchPython"
     return r
 
-def connect_to_endpoint(url: str, params: str):
+
+class Tweet(TypedDict):
+    lang: str
+    created_at: str
+    id: str
+    text: str
+
+class TweetMeta(TypedDict):
+    newest_id: str
+    oldest_id: str
+    result_count: int
+    next_token: NotRequired[str]
+
+class TwitterApiResponse(TypedDict):
+    data: list[Tweet]
+    meta: TweetMeta
+
+def connect_to_endpoint(url: str, params: dict) -> TwitterApiResponse:
     response = requests.get(url, auth=bearer_oauth, params=params)
-    print(response.status_code)
     if response.status_code != 200:
-        raise Exception(response.status_code, response.text)
+        logging.error('Failed to connect, response different from 200')
+    else:
+        logging.info('Successfully connected to twitter API')
     return response.json()
 
 
+<<<<<<< HEAD
 def query_twitter(start_time=None, next_token=None):
     query_params = {
         "query": "#F1",
@@ -63,6 +90,21 @@ def query_twitter(start_time=None, next_token=None):
 def fetching_tweets(response):
     if response["meta"].get("next_token", False):
         df = pd.DataFrame(response["data"])[["text", "created_at", "id", "lang"]]
+=======
+def query_twitter(start_time: Optional[str]=None, next_token: Optional[str]=None) -> TwitterApiResponse:
+    query_params = {'query': '#F1',
+                    'tweet.fields':'created_at,lang',
+                    'start_time':start_time,
+                    'max_results' : '100',
+                    'next_token': next_token
+                   }
+    json_response = connect_to_endpoint(search_url, query_params)
+    return json_response
+
+def fetching_tweets(response: TwitterApiResponse) -> pd.DataFrame:
+    if response['meta'].get('next_token', None):
+        df = pd.DataFrame(response['data'])[['text', 'created_at', 'id', 'lang']]
+>>>>>>> Solving typing missing
     else:
         df = pd.DataFrame(response["data"])[["text", "created_at", "id", "lang"]].iloc[
             :-1
@@ -71,9 +113,14 @@ def fetching_tweets(response):
     df["created_at"] = pd.to_datetime(df["created_at"])
     return df
 
+<<<<<<< HEAD
 
 def main():
     """
+=======
+def main() -> None:
+    '''
+>>>>>>> Solving typing missing
     Pushing results to GBQ
     """
     most_recent_dt = last_date_db()
@@ -81,16 +128,20 @@ def main():
     data = pd.DataFrame()
     while response["meta"].get("next_token", False):
         data = data.append(fetching_tweets(response), ignore_index=True)
+<<<<<<< HEAD
         response = query_twitter(
             most_recent_dt, response["meta"].get("next_token", False)
         )
+=======
+        response = query_twitter(most_recent_dt,response['meta'].get('next_token',None))
+>>>>>>> Solving typing missing
     data = data.append(fetching_tweets(response), ignore_index=True)
     table_id = 'wagon-bootcamp-802.my_dataset.twitter_table'
     data.to_gbq(table_id, if_exists='append')
-    print('Tweets successfully merged into the table')
+    logging.info('Tweets successfully merged into the table')
     return None
 
-def twitter_update(event, context):
+def twitter_update(event, context) -> None:
     """Triggered from a message on a Cloud Pub/Sub topic.
     Args:
          event (dict): Event payload.
