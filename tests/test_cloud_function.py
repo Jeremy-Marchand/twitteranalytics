@@ -1,5 +1,5 @@
 import pandas as pd
-from cloud_function.main import last_date_db, get_token, query_twitter, fetching_tweets
+from cloud_function.main import get_token, query_twitter, fetching_tweets
 from typing import TypedDict
 from typing_extensions import NotRequired
 
