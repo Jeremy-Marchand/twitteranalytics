@@ -8,7 +8,7 @@ import pandas as pd
 import logging
 from typing import TypedDict, Optional
 from typing_extensions import NotRequired
-from google.cloud import firestore
+from google.cloud import firestore, storage
 
 search_url = "https://api.twitter.com/2/tweets/search/recent"
 # Optional params: start_time,end_time,since_id,until_id,max_results,next_token,
@@ -100,11 +100,31 @@ def fetching_tweets(response: TwitterApiResponse) -> pd.DataFrame:
     return df
 
 
+class PusherToGcs:
+    def __init__(self):
+        self.client = storage.Client()
+        self.bucket = self.client.get_bucket("wagon-data-802-marchand")
+
+    def upload_data(self, df: pd.DataFrame, date: str) -> None:
+        """
+        Loads data into a csv file in gcs
+
+        Args :
+            df : Dataframe to push
+            date : Date that will be the name of the file.csv
+        """
+
+        self.bucket.blob(f"twitter_data/{date}.csv").upload_from_string(
+            df.to_csv(index=False), "text/csv"
+        )
+
+
 def main() -> None:
     """
     Pushing results to GBQ
     """
     most_recent_firestore = FirestoreLastDate()
+    pusher_to_gcs = PusherToGcs()
     most_recent_dt = most_recent_firestore.read_last_date()
     response = query_twitter(most_recent_dt)
     data = pd.DataFrame()
@@ -120,6 +140,8 @@ def main() -> None:
     logging.info("Tweets successfully merged into the table")
     most_recent_firestore.update_last_date(new_last_date)
     logging.info("New date updated to firestore")
+    pusher_to_gcs.upload_data(data, new_last_date)
+    logging.info("New data updated to gcs")
     return None
 
 
