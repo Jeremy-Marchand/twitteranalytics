@@ -24,7 +24,7 @@ jobs:
     - id: 'deploy'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
       with:
-        name: 'tweets_fetching'
+        name: 'tweets_fetching_test'
         runtime: 'python39'
         entry_point: 'twitter_update'
         memory_mb : '512'

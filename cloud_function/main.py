@@ -114,7 +114,7 @@ def main() -> None:
             most_recent_dt, response["meta"].get("next_token", None)
         )
     data = data.append(fetching_tweets(response), ignore_index=True)
-    table_id = "wagon-bootcamp-802.my_dataset.twitter_table"
+    table_id = "wagon-bootcamp-802.my_dataset.other_table"
     data.to_gbq(table_id, if_exists="append")
     new_last_date = data.iloc[0]["created_at"].tz_localize(None).isoformat() + "Z"
     logging.info("Tweets successfully merged into the table")
