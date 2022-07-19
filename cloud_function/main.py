@@ -25,7 +25,7 @@ class FirestoreLastDate:
         self.db = firestore.Client(project="wagon-bootcamp-802")
         self.doc_ref = self.db.collection("twitter_dates").document("last_date")
 
-    def update_last_date(self, last_date_db) -> None:
+    def update_last_date(self, last_date_db: str) -> None:
         self.doc_ref.set({"last_date_db": last_date_db})
 
     def read_last_date(self):
