@@ -5,3 +5,4 @@ fastapi
 nltk
 numpy
 google-auth
+google-cloud-firestore
