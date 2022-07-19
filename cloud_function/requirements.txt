@@ -6,3 +6,4 @@ nltk
 numpy
 google-auth
 google-cloud-firestore
+google-cloud-storage
