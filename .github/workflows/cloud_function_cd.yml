@@ -37,4 +37,4 @@ jobs:
         deploy_timeout: '180'
 
     - id: 'test'
-      run: 'curl "${{ steps.deploy.outputs.status }}"'
+      run: 'echo "Cloud function status : ${{ steps.deploy.outputs.status }}"'
