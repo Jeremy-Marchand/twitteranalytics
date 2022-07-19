@@ -36,8 +36,5 @@ jobs:
         event_trigger_resource: '${{ secrets.TWITTER_PUB_SUB }}'
         deploy_timeout: '180'
 
-
-
-    # # Example of using the output
-    # - id: 'test'
-    #   run: 'curl "${{ steps.deploy.outputs.url }}"'
+    - id: 'test'
+      run: 'curl "${{ steps.deploy.outputs.status }}"'
