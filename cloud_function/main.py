@@ -140,8 +140,8 @@ def main() -> None:
     logging.info("Tweets successfully merged into the table")
     most_recent_firestore.update_last_date(new_last_date)
     logging.info("New date updated to firestore")
-    pusher_to_gcs.upload_data(data, new_last_date)
-    logging.info("New data updated to gcs")
+    # pusher_to_gcs.upload_data(data, new_last_date)
+    # logging.info("New data updated to gcs")
     return None
 
 
