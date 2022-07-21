@@ -2,7 +2,7 @@ import pandas as pd
 import gcsfs
 from google.cloud import storage
 
-from cloud_function_cleaning.word_transformation import (
+from word_transformation import (
     num_remove,
     punct_remove,
     stop_remove,
