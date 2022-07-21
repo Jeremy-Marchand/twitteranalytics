@@ -1,0 +1,43 @@
+name: 'Cloud Function cleaning CD'
+
+on:
+  pull_request:
+    branches: [master]
+    types: [closed]
+    paths :
+      - 'cloud_functions/cloud_function_cleaning/*'
+      - '.github/workflows/cloud_function_cleaning_cd.yml'
+
+jobs:
+  job_id:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - id: auth
+      uses: google-github-actions/auth@v0
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - id: 'deploy'
+      uses: 'google-github-actions/deploy-cloud-functions@v0'
+      with:
+        name: 'tweets_cleaning'
+        runtime: 'python39'
+        entry_point: 'cleaning_file'
+        memory_mb : '512'
+        region: 'europe-west1'
+        source_dir: 'cloud_functions/cloud_function_cleaning/'
+        project_id: 'wagon-bootcamp-802'
+        # secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN'
+        event_trigger_type: 'google.storage.object.finalize'
+        event_trigger_resource: 'raw_data_twitter_bucket'
+        deploy_timeout: '180'
+
+    - id: 'test'
+      run: 'echo "Cloud function status : ${{ steps.deploy.outputs.status }}"'

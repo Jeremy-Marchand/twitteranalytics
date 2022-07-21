@@ -1,4 +1,4 @@
-from api import word_transformation
+from cloud_functions.cloud_function_cleaning import word_transformation
 
 
 def test_num_remove():

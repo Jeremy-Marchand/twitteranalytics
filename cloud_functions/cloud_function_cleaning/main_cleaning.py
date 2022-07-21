@@ -10,12 +10,11 @@ from cloud_function_cleaning.word_transformation import (
 
 
 class Gcs:
-    def __init__(self):
+    def __init__(self) -> None:
         self.client = storage.Client()
-        self.bucket = self.client.get_bucket("wagon-data-802-marchand")
         self.connector = gcsfs.GCSFileSystem(project="wagon-bootcamp-802")
 
-    def upload_data(self, df: pd.DataFrame, name: str) -> None:
+    def upload_data(self, bucket_name: str, df: pd.DataFrame, name: str) -> None:
         """
         Loads data into a csv file in gcs
 
@@ -23,10 +22,15 @@ class Gcs:
             df : Dataframe to push
             name : name that will be the name of the file.csv
         """
-
+        self.bucket = self.client.get_bucket(bucket_name)
         self.bucket.blob(f"twitter_data/{name}.csv").upload_from_string(
             df.to_csv(index=False), "text/csv"
         )
+
+    def download_data(self, bucket_name: str) -> pd.DataFrame:
+        with self.connector.open(f"gs://{bucket_name}/twitter_data/raw_data.csv") as f:
+            raw_df = pd.read_csv(f)
+        return raw_df
 
 
 def df_cleaning(df: pd.DataFrame) -> pd.DataFrame:
@@ -54,7 +58,6 @@ def cleaning_file() -> None:
     """
 
     gcs = Gcs()
-    with gcs.connector.open("raw_data.csv") as f:
-        raw_tweets = pd.read_csv(f)
-    clean_df = df_cleaning(raw_tweets)
-    gcs.upload_data(clean_df, "clean_data")
+    raw_df = gcs.download_data("raw_data_twitter_bucket")
+    clean_df = df_cleaning(raw_df)
+    gcs.upload_data("clean_data_twitter_bucket", clean_df, "clean_data")
