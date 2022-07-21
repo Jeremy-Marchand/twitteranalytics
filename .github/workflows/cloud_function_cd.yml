@@ -4,9 +4,9 @@ on:
   pull_request:
     branches: [master]
     types: [closed]
-  paths :
-    - 'cloud_function/*'
-    - '.github/workflows/*'
+    paths :
+      - 'cloud_function/*'
+      - '.github/workflows/*'
 
 jobs:
   job_id:
