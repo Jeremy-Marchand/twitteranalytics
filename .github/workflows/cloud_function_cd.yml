@@ -5,7 +5,7 @@ on:
     branches: [master]
     types: [closed]
     paths :
-      - 'cloud_functions/cloud_function_fetching*'
+      - 'cloud_functions/cloud_function_fetching/*'
       - '.github/workflows/*'
 
 jobs:
