@@ -103,7 +103,7 @@ def fetching_tweets(response: TwitterApiResponse) -> pd.DataFrame:
 class PusherToGcs:
     def __init__(self):
         self.client = storage.Client()
-        self.bucket = self.client.get_bucket("wagon-data-802-marchand")
+        self.bucket = self.client.get_bucket("raw_data_twitter_bucket")
 
     def upload_data(self, df: pd.DataFrame, name: str) -> None:
         """
