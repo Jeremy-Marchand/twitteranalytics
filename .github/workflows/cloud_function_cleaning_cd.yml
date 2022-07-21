@@ -38,6 +38,7 @@ jobs:
         memory_mb : '512'
         region: 'europe-west1'
         source_dir: 'cloud_functions/cloud_function_cleaning/'
+        google_function_source: 'main_cleaning'
         project_id: 'wagon-bootcamp-802'
         # secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN'
         event_trigger_type: 'google.storage.object.finalize'
