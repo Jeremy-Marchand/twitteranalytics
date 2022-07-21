@@ -1,4 +1,4 @@
-name: 'Cloud Function CD'
+name: 'Cloud Function Fetching CD'
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
     types: [closed]
     paths :
       - 'cloud_functions/cloud_function_fetching/*'
-      - '.github/workflows/*'
+      - '.github/workflows/cloud_function_fetching_cd.yml'
 
 jobs:
   job_id:
