@@ -2,7 +2,7 @@ import pandas as pd
 import gcsfs
 from google.cloud import storage
 
-from cloud_function_cleaning.word_transformation import (
+from word_transformation import (
     num_remove,
     punct_remove,
     stop_remove,
@@ -37,7 +37,7 @@ def df_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     """
     Overall cleansing of the Dataframe
     """
-    # Removing RT mentions
+    # Removing RT and mentions
     df["text"] = df["text"].str.replace(r"RT @\S* ", "")
     df["text"] = df["text"].str.replace(r"@\S* ", "")
     df["text"] = df["text"].str.replace(r"http\S*", "")
@@ -52,7 +52,7 @@ def df_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def cleaning_file() -> None:
+def cleaning_file(event, context) -> None:
     """
     Initiating a GCS conector and cleaning file
     """
