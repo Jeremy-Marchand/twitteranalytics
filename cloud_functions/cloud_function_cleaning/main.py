@@ -37,7 +37,7 @@ def df_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     """
     Overall cleansing of the Dataframe
     """
-    # Removing RT mentions
+    # Removing RT and mentions
     df["text"] = df["text"].str.replace(r"RT @\S* ", "")
     df["text"] = df["text"].str.replace(r"@\S* ", "")
     df["text"] = df["text"].str.replace(r"http\S*", "")

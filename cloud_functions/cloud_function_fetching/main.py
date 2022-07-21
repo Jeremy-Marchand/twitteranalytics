@@ -115,7 +115,7 @@ class PusherToGcs:
         """
 
         self.bucket.blob(f"twitter_data/{name}.csv").upload_from_string(
-            df.to_csv(index=False), "text/csv"
+            df.to_csv(index=False, encoding="utf-8"), "text/csv"
         )
 
 

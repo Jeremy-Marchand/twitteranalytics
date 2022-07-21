@@ -1,21 +1,16 @@
 name: 'Cloud Function cleaning CD'
 
 on:
-  push:
-    branches: [creating_cleaning_cd]
-    paths:
+  pull_request:
+    branches: [master]
+    types: [closed]
+    paths :
       - 'cloud_functions/cloud_function_cleaning/*'
       - '.github/workflows/cloud_function_cleaning_cd.yml'
-  # pull_request:
-  #   branches: [master]
-  #   types: [closed]
-  #   paths :
-  #     - 'cloud_functions/cloud_function_cleaning/*'
-  #     - '.github/workflows/cloud_function_cleaning_cd.yml'
 
 jobs:
   job_id:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
@@ -39,7 +34,6 @@ jobs:
         region: 'europe-west1'
         source_dir: 'cloud_functions/cloud_function_cleaning/'
         project_id: 'wagon-bootcamp-802'
-        # secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN'
         event_trigger_type: 'google.storage.object.finalize'
         event_trigger_resource: 'projects/wagon-bootcamp-802/buckets/raw_data_twitter_bucket'
         deploy_timeout: '180'
