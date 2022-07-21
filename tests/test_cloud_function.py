@@ -17,7 +17,8 @@ def get_token_side_effect(token_name, default=None):
 
 def test_get_token(mocker):
     mocker.patch(
-        "cloud_function.main.os.environ.get", side_effect=get_token_side_effect
+        "cloud_functions.cloud_function_fetching.main.os.environ.get",
+        side_effect=get_token_side_effect,
     )
     assert get_token() == "TOKEN_OK"
 
@@ -84,7 +85,7 @@ FAKE_TWITTER_API_RESPONSE_WITH_NO_NEXT = {
 
 def test_query_twitter_type(mocker):
     mocker.patch(
-        "cloud_function.main.connect_to_endpoint",
+        "cloud_functions.cloud_function_fetching.main.connect_to_endpoint",
         return_value=FAKE_TWITTER_API_RESPONSE,
     )
     assert query_twitter()
@@ -92,7 +93,7 @@ def test_query_twitter_type(mocker):
 
 def test_query_twitter_get_data(mocker):
     mocker.patch(
-        "cloud_function.main.connect_to_endpoint",
+        "cloud_functions.cloud_function_fetching.main.connect_to_endpoint",
         return_value=FAKE_TWITTER_API_RESPONSE,
     )
     assert query_twitter().get("data", False) != False
