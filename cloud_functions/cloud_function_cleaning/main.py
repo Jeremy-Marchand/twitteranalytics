@@ -52,7 +52,7 @@ def df_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def cleaning_file() -> None:
+def cleaning_file(event, context) -> None:
     """
     Initiating a GCS conector and cleaning file
     """
