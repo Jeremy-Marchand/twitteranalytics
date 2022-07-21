@@ -119,9 +119,11 @@ class PusherToGcs:
         )
 
 
-def main() -> None:
-    """
-    Pushing results to GBQ
+def twitter_update(event, context) -> None:
+    """Triggered from a message on a Cloud Pub/Sub topic.
+    Args:
+         event (dict): Event payload.
+         context (google.cloud.functions.Context): Metadata for the event.
     """
     most_recent_firestore = FirestoreLastDate()
     pusher_to_gcs = PusherToGcs()
@@ -142,13 +144,3 @@ def main() -> None:
     logging.info("New date updated to firestore")
     pusher_to_gcs.upload_data(data, "raw_data")
     logging.info("New data updated to gcs")
-    return None
-
-
-def twitter_update(event, context) -> None:
-    """Triggered from a message on a Cloud Pub/Sub topic.
-    Args:
-         event (dict): Event payload.
-         context (google.cloud.functions.Context): Metadata for the event.
-    """
-    main()

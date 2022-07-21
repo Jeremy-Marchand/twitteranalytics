@@ -5,7 +5,7 @@ on:
     branches: [master]
     types: [closed]
     paths :
-      - 'cloud_function/*'
+      - 'cloud_functions/cloud_function_fetching*'
       - '.github/workflows/*'
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
         entry_point: 'twitter_update'
         memory_mb : '512'
         region: 'europe-west1'
-        source_dir: 'cloud_function/'
+        source_dir: 'cloud_functions/cloud_function_fetching/'
         project_id: 'wagon-bootcamp-802'
         secret_environment_variables: 'BEARER_TOKEN=projects/791883141034/secrets/TWITTER_BEARER_TOKEN'
         event_trigger_type: 'google.pubsub.topic.publish'
