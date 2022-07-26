@@ -23,7 +23,9 @@ class Gcs:
         )
 
     def download_data(self, bucket_name: str) -> pd.DataFrame:
-        with self.connector.open(f"gs://{bucket_name}/twitter_data/raw_data.csv") as f:
+        with self.connector.open(
+            f"gs://{bucket_name}/twitter_data/clean_data.csv"
+        ) as f:
             df = pd.read_csv(f)
         return df
 
@@ -33,7 +35,7 @@ def sentiment_vader(row: pd.Series):
     # Create a SentimentIntensityAnalyzer object.
     sid_obj = SentimentIntensityAnalyzer()
 
-    sentiment_dict = sid_obj.polarity_scores(row["text"])
+    sentiment_dict = sid_obj.polarity_scores(row["clean_text"])
     negative = sentiment_dict["neg"]
     neutral = sentiment_dict["neu"]
     positive = sentiment_dict["pos"]
