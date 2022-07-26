@@ -1,18 +1,16 @@
 name: 'Cloud Function cleaning CD'
 
 on:
-  push:
-    branches: [creating_text_clean]
-  # pull_request:
-  #   branches: [master]
-  #   types: [closed]
+  pull_request:
+    branches: [master]
+    types: [closed]
     paths :
       - 'cloud_functions/cloud_function_cleaning/*'
       - '.github/workflows/cloud_function_cleaning_cd.yml'
 
 jobs:
   job_id:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
