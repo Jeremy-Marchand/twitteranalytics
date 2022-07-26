@@ -65,6 +65,6 @@ def predicting_tweeter_sentiment(event, context) -> None:
 
     gcs = Gcs()
     clean_df = gcs.download_data("clean_data_twitter_bucket")
-    clean_df = clean_df.apply(sentiment_vader, axis=1)
+    predicted_df = clean_df.apply(sentiment_vader, axis=1)
     table_id = "wagon-bootcamp-802.my_dataset.predicted_table"
-    clean_df.to_gbq(table_id, if_exists="append")
+    predicted_df.to_gbq(table_id, if_exists="append")
