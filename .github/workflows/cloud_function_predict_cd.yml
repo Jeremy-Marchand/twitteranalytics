@@ -1,12 +1,12 @@
-name: 'Cloud Function cleaning CD'
+name: 'Cloud Function predict CD'
 
 on:
   pull_request:
     branches: [master]
     types: [closed]
     paths :
-      - 'cloud_functions/cloud_function_cleaning/*'
-      - '.github/workflows/cloud_function_cleaning_cd.yml'
+      - 'cloud_functions/cloud_function_predict/*'
+      - '.github/workflows/cloud_function_predict_cd.yml'
 
 jobs:
   job_id:
@@ -27,16 +27,16 @@ jobs:
     - id: 'deploy'
       uses: 'google-github-actions/deploy-cloud-functions@v0'
       with:
-        name: 'tweets_cleaning'
+        name: 'tweets_predict'
         runtime: 'python39'
-        entry_point: 'cleaning_file'
+        entry_point: 'predicting_tweeter_sentiment'
         memory_mb : '512'
         region: 'europe-west1'
-        source_dir: 'cloud_functions/cloud_function_cleaning/'
+        source_dir: 'cloud_functions/cloud_function_predict/'
         project_id: 'wagon-bootcamp-802'
         event_trigger_type: 'google.storage.object.finalize'
-        event_trigger_resource: 'projects/wagon-bootcamp-802/buckets/raw_data_twitter_bucket'
-        deploy_timeout: '300'
+        event_trigger_resource: 'projects/wagon-bootcamp-802/buckets/clean_data_twitter_bucket'
+        deploy_timeout: '180'
 
     - id: 'test'
       run: 'echo "Cloud function status : ${{ steps.deploy.outputs.status }}"'

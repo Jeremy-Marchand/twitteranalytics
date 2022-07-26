@@ -38,17 +38,18 @@ def df_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     Overall cleansing of the Dataframe
     """
     # Removing RT and mentions
-    df["text"] = df["text"].str.replace(r"RT @\S* ", "")
-    df["text"] = df["text"].str.replace(r"@\S* ", "")
-    df["text"] = df["text"].str.replace(r"http\S*", "")
+    df["clean_text"] = df["text"]
+    df["clean_text"] = df["clean_text"].str.replace(r"RT @\S* ", "")
+    df["clean_text"] = df["clean_text"].str.replace(r"@\S* ", "")
+    df["clean_text"] = df["clean_text"].str.replace(r"http\S*", "")
     # Removing ponctuation
-    df["text"] = df["text"].apply(punct_remove)
-    df["text"] = df["text"].apply(lambda row: row.lower())
+    df["clean_text"] = df["clean_text"].apply(punct_remove)
+    df["clean_text"] = df["clean_text"].apply(lambda row: row.lower())
     # Removing numerical values
-    df["text"] = df["text"].apply(num_remove)
+    df["clean_text"] = df["clean_text"].apply(num_remove)
     # removing stop words
-    df["text"] = df["text"].apply(stop_remove)
-    df["text"] = df["text"].str.replace(r" f ", " f1 ")
+    df["clean_text"] = df["clean_text"].apply(stop_remove)
+    df["clean_text"] = df["clean_text"].str.replace(r" f ", " f1 ")
     return df
 
 
