@@ -1,0 +1,45 @@
+name: 'Cloud Function predict CD'
+
+on:
+
+  push:
+    branches: [creating_text_clean]
+  # pull_request:
+  #   branches: [master]
+  #   types: [closed]
+    paths :
+      - 'cloud_functions/cloud_function_predict/*'
+      - '.github/workflows/cloud_function_predict_cd.yml'
+
+jobs:
+  job_id:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - id: auth
+      uses: google-github-actions/auth@v0
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - id: 'deploy'
+      uses: 'google-github-actions/deploy-cloud-functions@v0'
+      with:
+        name: 'tweets_predict'
+        runtime: 'python39'
+        entry_point: 'predicting_tweeter_sentiment'
+        memory_mb : '512'
+        region: 'europe-west1'
+        source_dir: 'cloud_functions/cloud_function_predict/'
+        project_id: 'wagon-bootcamp-802'
+        event_trigger_type: 'google.storage.object.finalize'
+        event_trigger_resource: 'projects/wagon-bootcamp-802/buckets/clean_data_twitter_bucket'
+        deploy_timeout: '180'
+
+    - id: 'test'
+      run: 'echo "Cloud function status : ${{ steps.deploy.outputs.status }}"'
