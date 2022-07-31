@@ -1,6 +1,7 @@
 import os
 from typing import Dict
 import requests
+import json
 
 # from dotenv import load_dotenv, find_dotenv
 from datetime import datetime
@@ -9,6 +10,7 @@ import logging
 from typing import TypedDict, Optional
 from typing_extensions import NotRequired
 from google.cloud import firestore, storage
+from jsonschema import validate
 
 search_url = "https://api.twitter.com/2/tweets/search/recent"
 # Optional params: start_time,end_time,since_id,until_id,max_results,next_token,
@@ -101,9 +103,10 @@ def fetching_tweets(response: TwitterApiResponse) -> pd.DataFrame:
 
 
 class PusherToGcs:
-    def __init__(self):
+    def __init__(self, bucket_name: str) -> None:
         self.client = storage.Client()
-        self.bucket = self.client.get_bucket("raw_data_twitter_bucket")
+        self.bucket = self.client.get_bucket(bucket_name)
+        self.error_bucket = self.client.get_bucket("twitter_production_error_bucket")
 
     def upload_data(self, df: pd.DataFrame, name: str) -> None:
         """
@@ -118,6 +121,51 @@ class PusherToGcs:
             df.to_csv(index=False, encoding="utf-8-sig"), "text/csv"
         )
 
+    def upload_error_data(self, json_object: TwitterApiResponse, name: str) -> None:
+        """
+        Loads data into a csv file in gcs
+
+        Args :
+            json_object : json to push
+            name : name that will be the name of the file.csv
+        """
+
+        self.error_bucket.blob(f"twitter_data/{name}.json").upload_from_string(
+            data=json.dumps(json_object), content_type="application/json"
+        )
+
+
+twitter_json_schema = {
+    "type": "object",
+    "properties": {
+        "data": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "lang": {"type": "string"},
+                    "created_at": {"type": "string"},
+                    "text": {"type": "string"},
+                    "id": {"type": "string"},
+                },
+                "additionalProperties": False,
+                "required": ["lang", "created_at", "text", "id"],
+            },
+        },
+        "meta": {
+            "type": "object",
+            "properties": {
+                "newest_id": {"type": "string"},
+                "oldest_id": {"type": "string"},
+                "result_count": {"type": "number"},
+                "next_token": {"type": "string"},
+            },
+            "additionalProperties": False,
+            "required": ["newest_id", "oldest_id", "result_count"],
+        },
+    },
+}
+
 
 def twitter_update(event, context) -> None:
     """Triggered from a message on a Cloud Pub/Sub topic.
@@ -126,9 +174,15 @@ def twitter_update(event, context) -> None:
          context (google.cloud.functions.Context): Metadata for the event.
     """
     most_recent_firestore = FirestoreLastDate()
-    pusher_to_gcs = PusherToGcs()
+    pusher_to_gcs = PusherToGcs("raw_data_twitter_bucket")
     most_recent_dt = most_recent_firestore.read_last_date()
     response = query_twitter(most_recent_dt)
+
+    # Validating twitter API response schema to handle exceptions and investigate
+    try:
+        validate(instance=response, schema=twitter_json_schema)
+    except:
+        pusher_to_gcs.upload_error_data(response, f"raw_error_{most_recent_dt}")
     data = pd.DataFrame()
     while response["meta"].get("next_token", None):
         data = data.append(fetching_tweets(response), ignore_index=True)
