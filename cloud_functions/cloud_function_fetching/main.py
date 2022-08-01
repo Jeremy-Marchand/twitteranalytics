@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 import pandas as pd
 import logging
-from typing import TypedDict, Optional
+from typing import TypedDict, Optional, Union
 from typing_extensions import NotRequired
 from google.cloud import firestore, storage
 from jsonschema import validate
@@ -121,7 +121,9 @@ class PusherToGcs:
             df.to_csv(index=False, encoding="utf-8-sig"), "text/csv"
         )
 
-    def upload_error_data(self, json_object: TwitterApiResponse, name: str) -> None:
+    def upload_error_data(
+        self, json_object: Union[TwitterApiResponse, list], name: str
+    ) -> None:
         """
         Loads data into a csv file in gcs
 
@@ -182,7 +184,9 @@ def twitter_update(event, context) -> None:
     try:
         validate(instance=response, schema=twitter_json_schema)
     except:
-        pusher_to_gcs.upload_error_data(response, f"raw_error_{most_recent_dt}")
+        pusher_to_gcs.upload_error_data(
+            response, f"raw_error_twitter_format_{most_recent_dt}"
+        )
     data = pd.DataFrame()
     while response["meta"].get("next_token", None):
         data = data.append(fetching_tweets(response), ignore_index=True)
@@ -191,7 +195,11 @@ def twitter_update(event, context) -> None:
         )
     data = data.append(fetching_tweets(response), ignore_index=True)
     table_id = "wagon-bootcamp-802.my_dataset.twitter_table"
-    data.to_gbq(table_id, if_exists="append")
+    try:
+        data.to_gbq(table_id, if_exists="append")
+    except:
+        json_error = data.to_dict(orient="records")
+        pusher_to_gcs.upload_error_data(json_error, f"raw_error_gbq_{most_recent_dt}")
     new_last_date = data.iloc[0]["created_at"].tz_localize(None).isoformat() + "Z"
     logging.info("Tweets successfully merged into the table")
     most_recent_firestore.update_last_date(new_last_date)
