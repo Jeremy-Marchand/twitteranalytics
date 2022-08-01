@@ -111,7 +111,7 @@ def test_fetching_tweets_no_next():
         index=[0],
     )
     df_test_comparison["created_at"] = pd.to_datetime(df_test_comparison["created_at"])
-    pd.testing.assert_frame_equal(df_test_from_json, df_test_comparison)
+    pd.testing.assert_frame_equal(df_test_from_json, df_test_comparison)  # type: ignore
 
 
 def test_fetching_tweets_next():
@@ -126,4 +126,4 @@ def test_fetching_tweets_next():
         index=[0],
     )
     df_test_comparison["created_at"] = pd.to_datetime(df_test_comparison["created_at"])
-    pd.testing.assert_frame_equal(df_test_from_json, df_test_comparison)
+    pd.testing.assert_frame_equal(df_test_from_json, df_test_comparison)  # type: ignore

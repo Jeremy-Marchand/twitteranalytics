@@ -28,10 +28,10 @@ class FirestoreLastDate:
         self.doc_ref = self.db.collection("twitter_dates").document("last_date")
 
     def update_last_date(self, last_date_db: str) -> None:
-        self.doc_ref.set({"last_date_db": last_date_db})
+        self.doc_ref.set({"last_date_db": last_date_db})  # type: ignore
 
     def read_last_date(self):
-        last_date = self.doc_ref.get().to_dict()
+        last_date = self.doc_ref.get().to_dict()  # type: ignore
         if last_date:
             return last_date.get("last_date_db")
         else:
