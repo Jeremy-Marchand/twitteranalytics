@@ -52,12 +52,55 @@ def df_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+drivers_list = {
+    "Hamilton": ["hamilton", "lewis"],
+    "Russel": ["russel", "georges"],
+    "Perez": ["perez", "checo", "sergio"],
+    "Verstappen": ["verstappen", "max"],
+    "Sainz": ["sainz", "carlos"],
+    "Leclerc": ["leclerc", "charles"],
+    "Ricciardo": ["ricciardo", "daniel"],
+    "Norris": ["norris", "lando"],
+    "Alonso": ["alonso", "fernando"],
+    "Ocon": ["ocon", "esteban"],
+    "Schumacher": ["schumacher", "mick"],
+    "Magnussen": ["magnussen", "kevin"],
+    "Bottas": ["bottas", "valtteri"],
+    "Zhou": ["zhou", "guanyu"],
+    "Gasly": ["gasly", "pierre"],
+    "Tsunoda": ["tsunoda", "yuki"],
+    "Stroll": ["stroll", "lance"],
+    "Hulkenberg": ["hulkenberg", "nico"],
+    "Albon": ["albon", "alexander"],
+    "Latifi": ["latifi", "nicholas"],
+}
+
+
 def cleaning_file(event, context) -> None:
     """
     Initiating a GCS conector and cleaning file
     """
-
+    # Storing clean tweets for prediction
     gcs = Gcs()
     raw_df = gcs.download_data("raw_data_twitter_bucket")
     clean_df = df_cleaning(raw_df)
     gcs.upload_data("clean_data_twitter_bucket", clean_df, "clean_data")
+
+    # Creating the n-n table for tweet_id / driver_name
+    normalized_df = pd.DataFrame({"id": [], "driver_name": []})
+    for driver, names in drivers_list.items():
+        driver_mask = clean_df["clean_text"].str.contains(f"{names[0]}", na=False)
+        if len(names) > 1:
+            for name in names[1:]:
+                driver_mask = driver_mask | clean_df["clean_text"].str.contains(
+                    f"{name}", na=False
+                )
+        temp_df = clean_df[["id"]][driver_mask]
+        temp_df["driver_name"] = driver
+        normalized_df = pd.concat([normalized_df, temp_df])
+    normalized_df.reset_index(drop=True, inplace=True)
+    normalized_df.rename(columns={"id": "tweet_id"}, inplace=True)
+    normalized_df["tweet_id"] = normalized_df["tweet_id"].astype(int)
+
+    table_normal_id = "wagon-bootcamp-802.my_dataset.normalized_table_tweet_driver"
+    normalized_df.to_gbq(table_normal_id, if_exists="append")
