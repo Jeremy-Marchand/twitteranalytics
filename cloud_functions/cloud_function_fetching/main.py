@@ -125,11 +125,11 @@ class PusherToGcs:
         self, json_object: Union[TwitterApiResponse, list], name: str
     ) -> None:
         """
-        Loads data into a csv file in gcs
+        Loads data into a json file in gcs
 
         Args :
             json_object : json to push
-            name : name that will be the name of the file.csv
+            name : name that will be the name.csv
         """
 
         self.error_bucket.blob(f"twitter_data/{name}.json").upload_from_string(
@@ -198,7 +198,9 @@ def twitter_update(event, context) -> None:
     try:
         data.to_gbq(table_id, if_exists="append")
     except:
-        json_error = data.to_dict(orient="records")
+        data_error = data.copy(deep=True)
+        data_error["created_at"] = data_error["created_at"].astype(str)
+        json_error = data_error.to_dict(orient="records")
         pusher_to_gcs.upload_error_data(json_error, f"raw_error_gbq_{most_recent_dt}")
     new_last_date = data.iloc[0]["created_at"].tz_localize(None).isoformat() + "Z"
     logging.info("Tweets successfully merged into the table")
