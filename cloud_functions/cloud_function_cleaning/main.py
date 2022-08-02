@@ -52,30 +52,6 @@ def df_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-drivers_list = {
-    "Hamilton": ["hamilton", "lewis"],
-    "Russel": ["russel", "georges"],
-    "Perez": ["perez", "checo", "sergio"],
-    "Verstappen": ["verstappen", "max"],
-    "Sainz": ["sainz", "carlos"],
-    "Leclerc": ["leclerc", "charles"],
-    "Ricciardo": ["ricciardo", "daniel"],
-    "Norris": ["norris", "lando"],
-    "Alonso": ["alonso", "fernando"],
-    "Ocon": ["ocon", "esteban"],
-    "Schumacher": ["schumacher", "mick"],
-    "Magnussen": ["magnussen", "kevin"],
-    "Bottas": ["bottas", "valtteri"],
-    "Zhou": ["zhou", "guanyu"],
-    "Gasly": ["gasly", "pierre"],
-    "Tsunoda": ["tsunoda", "yuki"],
-    "Stroll": ["stroll", "lance"],
-    "Hulkenberg": ["hulkenberg", "nico"],
-    "Albon": ["albon", "alexander"],
-    "Latifi": ["latifi", "nicholas"],
-}
-
-
 def cleaning_file(event, context) -> None:
     """
     Initiating a GCS conector and cleaning file
@@ -84,11 +60,4 @@ def cleaning_file(event, context) -> None:
     gcs = Gcs()
     raw_df = gcs.download_data("raw_data_twitter_bucket")
     clean_df = df_cleaning(raw_df)
-    for driver, names in drivers_list.items():
-        mask = clean_df["clean_text"].str.contains(f"{names[0]}", na=False)
-        if len(names) > 1:
-            for name in names[1:]:
-                mask = mask | clean_df["clean_text"].str.contains(f"{name}", na=False)
-        clean_df[driver] = mask * 1
-
     gcs.upload_data("clean_data_twitter_bucket", clean_df, "clean_data")
