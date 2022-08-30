@@ -1,6 +1,6 @@
 variable "project_id" {
   type        = string
-  description = "The Google Cloud Project Id"
+  description = "wagon-bootcamp-802"
 }
 
 variable "region" {
