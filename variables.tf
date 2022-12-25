@@ -1,6 +1,7 @@
 variable "project_id" {
   type        = string
   description = "wagon-bootcamp-802"
+  default     = "wagon-bootcamp-802"
 }
 
 variable "region" {
